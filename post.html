@@ -1,21 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Comments</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
-<h2>Comments</h2>
+<div class="container">
 
-<div id="comments"></div>
+    <h1>💬 Comments</h1>
 
-<input
-id="comment"
-placeholder="Write a comment">
+    <div class="card">
 
-<button onclick="addComment()">
-Add Comment
-</button>
+        <div id="comments"></div>
+
+        <div class="comment-box">
+
+            <input
+            id="comment"
+            placeholder="Write a comment...">
+
+            <button onclick="addComment()">
+                Add Comment
+            </button>
+
+            <br><br>
+
+            <a href="index.html">
+                <button>
+                    Back to Blogs
+                </button>
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
 
 <script>
 
@@ -24,51 +49,85 @@ new URLSearchParams(
 window.location.search
 ).get("id");
 
-async function loadComments() {
+async function loadComments(){
 
-  const response = await fetch(
-    `http://localhost:5000/comments/${postId}`
-  );
+    try{
 
-  const comments =
-    await response.json();
+        const response = await fetch(
+            `http://localhost:5000/comments/${postId}`
+        );
 
-  let output = "";
+        const comments =
+        await response.json();
 
-  comments.forEach(c => {
-    output += `<p>${c.comment}</p>`;
-  });
+        let output = "";
 
-  document.getElementById(
-    "comments"
-  ).innerHTML = output;
+        if(comments.length === 0){
+
+            output = `
+            <div class="comment">
+                No comments yet.
+            </div>
+            `;
+        }
+
+        comments.forEach(c => {
+
+            output += `
+            <div class="comment">
+                💬 ${c.comment}
+            </div>
+            `;
+        });
+
+        document.getElementById("comments")
+        .innerHTML = output;
+
+    }
+    catch(error){
+
+        console.log(error);
+
+        document.getElementById("comments")
+        .innerHTML = `
+        <div class="comment">
+            Unable to load comments.
+        </div>
+        `;
+    }
 }
 
-async function addComment() {
+async function addComment(){
 
-  await fetch(
-    "http://localhost:5000/comments",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type":
-        "application/json"
-      },
-      body: JSON.stringify({
-        postId,
-        comment:
-        document.getElementById(
-          "comment"
-        ).value
-      })
+    const comment =
+    document.getElementById("comment")
+    .value;
+
+    if(comment.trim() === ""){
+
+        alert("Enter a comment");
+        return;
     }
-  );
 
-  document.getElementById(
-    "comment"
-  ).value = "";
+    await fetch(
+        "http://localhost:5000/comments",
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":
+                "application/json"
+            },
+            body:JSON.stringify({
+                postId,
+                comment
+            })
+        }
+    );
 
-  loadComments();
+    document.getElementById("comment")
+    .value = "";
+
+    loadComments();
 }
 
 loadComments();

@@ -1,42 +1,54 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Create Blog Post</title>
+    <title>Create Blog</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Create Blog Post</h2>
+<div class="container">
 
-<input id="title" placeholder="Title">
-<br><br>
+<h1>Create Blog Post</h1>
 
-<textarea id="content" placeholder="Content"></textarea>
-<br><br>
+<div class="card">
+
+<input id="title" placeholder="Enter Blog Title">
+
+<textarea
+id="content"
+placeholder="Write your blog content here...">
+</textarea>
 
 <button onclick="createPost()">
-Create Post
+Publish Blog
 </button>
 
+</div>
+
+</div>
+
 <script>
-async function createPost() {
+async function createPost(){
 
-  const response = await fetch(
-    "http://localhost:5000/posts",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        title: document.getElementById("title").value,
-        content: document.getElementById("content").value
-      })
-    }
-  );
+const response = await fetch(
+"http://localhost:5000/posts",
+{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+title:document.getElementById("title").value,
+content:document.getElementById("content").value
+})
+}
+);
 
-  const data = await response.json();
+const data = await response.json();
 
-  alert(data.message);
+alert(data.message);
+
+window.location.href="index.html";
 }
 </script>
 

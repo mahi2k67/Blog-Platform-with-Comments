@@ -1,64 +1,114 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>All Blogs</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blog Platform</title>
+
+<link rel="stylesheet" href="style.css">
+
 </head>
 <body>
 
-<h2>All Blog Posts</h2>
+<div class="container">
 
-<a href="create-post.html">
-Create New Post
-</a>
+    <h1>📝 Blog Platform</h1>
 
-<hr>
+    <a href="create-post.html">
+        <button class="create-btn">
+            Create New Blog
+        </button>
+    </a>
 
-<div id="posts"></div>
+    <div id="posts"></div>
+
+</div>
 
 <script>
 
 async function loadPosts() {
 
-  const response = await fetch(
-    "http://localhost:5000/posts"
-  );
+    try {
 
-  const posts = await response.json();
+        const response = await fetch(
+            "http://localhost:5000/posts"
+        );
 
-  let output = "";
+        const posts = await response.json();
 
-  posts.forEach(post => {
+        let output = "";
 
-    output += `
-      <h3>${post.title}</h3>
-      <p>${post.content}</p>
+        if(posts.length === 0){
 
-      <button onclick="deletePost(${post.id})">
-      Delete
-      </button>
+            output = `
+            <div class="card">
+                <h3>No blog posts available.</h3>
+            </div>
+            `;
+        }
 
-      <a href="post.html?id=${post.id}">
-      Comments
-      </a>
+        posts.reverse().forEach(post => {
 
-      <hr>
-    `;
-  });
+            output += `
+            <div class="card">
 
-  document.getElementById("posts").innerHTML =
-    output;
+                <h2 class="post-title">
+                    ${post.title}
+                </h2>
+
+                <p class="post-content">
+                    ${post.content}
+                </p>
+
+                <div class="actions">
+
+                    <button onclick="deletePost(${post.id})">
+                        Delete
+                    </button>
+
+                    <a href="post.html?id=${post.id}">
+                        <button>
+                            Comments
+                        </button>
+                    </a>
+
+                </div>
+
+            </div>
+            `;
+        });
+
+        document.getElementById("posts").innerHTML =
+            output;
+
+    } catch(error){
+
+        console.log(error);
+
+        document.getElementById("posts").innerHTML = `
+        <div class="card">
+            <h3>Cannot connect to backend.</h3>
+            <p>Make sure npm run dev is running.</p>
+        </div>
+        `;
+    }
 }
 
-async function deletePost(id) {
+async function deletePost(id){
 
-  await fetch(
-    `http://localhost:5000/posts/${id}`,
-    {
-      method: "DELETE"
-    }
-  );
+    const confirmDelete =
+    confirm("Delete this blog post?");
 
-  loadPosts();
+    if(!confirmDelete) return;
+
+    await fetch(
+        `http://localhost:5000/posts/${id}`,
+        {
+            method:"DELETE"
+        }
+    );
+
+    loadPosts();
 }
 
 loadPosts();
