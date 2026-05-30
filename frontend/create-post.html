@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Create Blog Post</title>
+</head>
+<body>
+
+<h2>Create Blog Post</h2>
+
+<input id="title" placeholder="Title">
+<br><br>
+
+<textarea id="content" placeholder="Content"></textarea>
+<br><br>
+
+<button onclick="createPost()">
+Create Post
+</button>
+
+<script>
+async function createPost() {
+
+  const response = await fetch(
+    "http://localhost:5000/posts",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        title: document.getElementById("title").value,
+        content: document.getElementById("content").value
+      })
+    }
+  );
+
+  const data = await response.json();
+
+  alert(data.message);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Comments</title>
+</head>
+<body>
+
+<h2>Comments</h2>
+
+<div id="comments"></div>
+
+<input
+id="comment"
+placeholder="Write a comment">
+
+<button onclick="addComment()">
+Add Comment
+</button>
+
+<script>
+
+const postId =
+new URLSearchParams(
+window.location.search
+).get("id");
+
+async function loadComments() {
+
+  const response = await fetch(
+    `http://localhost:5000/comments/${postId}`
+  );
+
+  const comments =
+    await response.json();
+
+  let output = "";
+
+  comments.forEach(c => {
+    output += `<p>${c.comment}</p>`;
+  });
+
+  document.getElementById(
+    "comments"
+  ).innerHTML = output;
+}
+
+async function addComment() {
+
+  await fetch(
+    "http://localhost:5000/comments",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type":
+        "application/json"
+      },
+      body: JSON.stringify({
+        postId,
+        comment:
+        document.getElementById(
+          "comment"
+        ).value
+      })
+    }
+  );
+
+  document.getElementById(
+    "comment"
+  ).value = "";
+
+  loadComments();
+}
+
+loadComments();
+
+</script>
+
+</body>
+</html>
